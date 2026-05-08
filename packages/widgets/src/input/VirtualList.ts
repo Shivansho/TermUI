@@ -15,6 +15,7 @@
 
 import { type Screen, type Style, styleToCellAttrs, truncate, stringWidth } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
+import { computeRange } from './virtual-scroll.js';
 
 export interface VirtualListOptions {
     /** Total number of items (the full dataset size) */
@@ -162,8 +163,9 @@ export class VirtualList extends Widget {
         const visibleItemCount = Math.floor(height / this._itemHeight);
 
         // Calculate the visible window with overscan
-        const startIdx = Math.max(0, this._scrollOffset - this._overscan);
-        const endIdx = Math.min(this._totalItems, this._scrollOffset + visibleItemCount + this._overscan);
+        const { start: startIdx, end: endIdx } = computeRange(
+            this._scrollOffset, visibleItemCount, this._totalItems, this._overscan,
+        );
 
         // Content width (leave room for scrollbar)
         const contentWidth = this._showScrollbar && this._totalItems > visibleItemCount

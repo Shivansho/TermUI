@@ -25,6 +25,10 @@ export type { ChatMessageOptions, MessageRole } from './display/ChatMessage.js';
 export { ToolCall, ToolApproval } from './display/ToolCall.js';
 export type { ToolCallOptions, ToolApprovalOptions, ToolCallStatus } from './display/ToolCall.js';
 
+// ── Virtual Scroll Helpers ────────────────────────────
+export { computeRange, computeVariableRange } from './input/virtual-scroll.js';
+export type { ScrollRange } from './input/virtual-scroll.js';
+
 // ── Input Widgets ─────────────────────────────────────
 export { List } from './input/List.js';
 export type { ListItem } from './input/List.js';
