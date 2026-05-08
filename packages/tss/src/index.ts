@@ -17,6 +17,10 @@ export type { ThemeVariables, ResolvedRule } from './engine.js';
 // Built-in Themes
 export { BUILTIN_THEMES, getBuiltinThemeNames, getBuiltinTheme, getAllBuiltinThemes } from './themes.js';
 
+// Design Tokens
+export { systemTheme, defaultDark, defaultLight } from './tokens.js';
+export type { ThemeTokens } from './tokens.js';
+
 // Hot-Reload Watcher
 export { TSSWatcher } from './watcher.js';
 export type { WatcherOptions } from './watcher.js';
