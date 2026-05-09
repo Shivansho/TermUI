@@ -1,6 +1,6 @@
 // MultiSelect — checkbox-style multi-item selector
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs } from '@termuijs/core';
+import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, caps } from '@termuijs/core';
 
 export interface MultiSelectOption { label: string; value: string; disabled?: boolean; }
 export interface MultiSelectOptions {
@@ -24,8 +24,8 @@ export class MultiSelect extends Widget {
         super(mergeStyles(defaultStyle(), { height: Math.max(options.length, 1) }));
         this._options = options;
         this._activeColor = config.activeColor ?? { type: 'named', name: 'cyan' };
-        this._checkChar = config.checkChar ?? '◼';
-        this._uncheckChar = config.uncheckChar ?? '◻';
+        this._checkChar = config.checkChar ?? (caps.unicode ? '◼' : '[x]');
+        this._uncheckChar = config.uncheckChar ?? (caps.unicode ? '◻' : '[ ]');
         this._onSubmit = config.onSubmit;
     }
 
@@ -48,7 +48,7 @@ export class MultiSelect extends Widget {
             const o = this._options[i];
             const active = i === this._cursorIndex;
             const checked = this._checked.has(i);
-            const label = `${active ? '❯ ' : '  '}${checked ? this._checkChar : this._uncheckChar} ${o.label}`;
+            const label = `${active ? (caps.unicode ? '❯ ' : '> ') : '  '}${checked ? this._checkChar : this._uncheckChar} ${o.label}`;
             screen.writeString(x, y + i, label.slice(0, width), {
                 ...attrs,
                 fg: o.disabled ? { type: 'named' as const, name: 'brightBlack' as const } : active ? this._activeColor : attrs.fg,

@@ -1,6 +1,6 @@
 // Select — single-item dropdown selector
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs } from '@termuijs/core';
+import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, caps } from '@termuijs/core';
 
 export interface SelectOption { label: string; value: string; disabled?: boolean; }
 export interface SelectOptions {
@@ -54,13 +54,13 @@ export class Select extends Widget {
         const attrs = styleToCellAttrs(this.style);
         const sel = this._options[this._selectedIndex];
         const label = sel ? sel.label : this._placeholder;
-        const prefix = this._isOpen ? '▼ ' : '▶ ';
+        const prefix = this._isOpen ? (caps.unicode ? '▼ ' : 'v ') : (caps.unicode ? '▶ ' : '> ');
         screen.writeString(x, y, prefix + label.slice(0, width - 2), { ...attrs, fg: this._activeColor });
         if (this._isOpen) {
             for (let i = 0; i < this._options.length; i++) {
                 const o = this._options[i];
                 const isSel = i === this._selectedIndex;
-                const m = isSel ? '● ' : '  ';
+                const m = isSel ? (caps.unicode ? '● ' : '* ') : '  ';
                 screen.writeString(x, y + 1 + i, m + o.label.slice(0, width - 2), {
                     ...attrs,
                     fg: o.disabled ? { type: 'named' as const, name: 'brightBlack' as const } : isSel ? this._activeColor : attrs.fg,

@@ -2,7 +2,7 @@
 // @termuijs/widgets — List widget (selectable)
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, styleToCellAttrs, stringWidth, truncate } from '@termuijs/core';
+import { type Screen, type Style, styleToCellAttrs, stringWidth, truncate, caps } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 
 export interface ListItem {
@@ -91,7 +91,7 @@ export class List extends Widget {
             const isSelected = itemIdx === this._selectedIndex;
 
             // Compose the line
-            const prefix = isSelected ? '▸ ' : '  ';
+            const prefix = isSelected ? (caps.unicode ? '▸ ' : '> ') : '  ';
             let line = prefix + item.label;
             line = truncate(line, width);
 
@@ -119,7 +119,7 @@ export class List extends Widget {
             const scrollRatio = this._scrollOffset / (this._items.length - height);
             const scrollPos = Math.floor(scrollRatio * (height - 1));
             for (let r = 0; r < height; r++) {
-                const scrollChar = r === scrollPos ? '█' : '░';
+                const scrollChar = r === scrollPos ? (caps.unicode ? '█' : '#') : (caps.unicode ? '░' : '-');
                 screen.setCell(x + width - 1, y + r, { char: scrollChar, ...attrs, dim: true });
             }
         }

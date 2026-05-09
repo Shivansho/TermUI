@@ -2,7 +2,7 @@
 // @termuijs/widgets — Sparkline widget (braille chart)
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, type Color, styleToCellAttrs } from '@termuijs/core';
+import { type Screen, type Style, type Color, styleToCellAttrs, caps } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 
 export interface SparklineOptions {
@@ -12,8 +12,10 @@ export interface SparklineOptions {
     showRange?: boolean;
 }
 
-// Braille sparkline characters (8 levels per cell, bottom to top)
-const SPARK_CHARS = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+// Sparkline characters (8 levels per cell, bottom to top)
+// Falls back to ASCII digits when unicode is not available.
+const SPARK_CHARS_UNICODE = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+const SPARK_CHARS_ASCII = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
 /**
  * Sparkline — a compact inline chart showing a data trend.
@@ -68,11 +70,12 @@ export class Sparkline extends Widget {
         const max = Math.max(...data);
         const range = max - min || 1;
 
+        const sparkChars = caps.unicode ? SPARK_CHARS_UNICODE : SPARK_CHARS_ASCII;
         for (let i = 0; i < data.length; i++) {
             const normalized = (data[i] - min) / range;
             const charIdx = Math.min(7, Math.floor(normalized * 8));
             screen.setCell(x + labelWidth + i, y, {
-                char: SPARK_CHARS[charIdx],
+                char: sparkChars[charIdx],
                 fg: this._color,
             });
         }

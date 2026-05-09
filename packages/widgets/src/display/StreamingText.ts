@@ -2,7 +2,7 @@
 // @termuijs/widgets — StreamingText widget
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, styleToCellAttrs, wordWrap } from '@termuijs/core';
+import { type Screen, type Style, styleToCellAttrs, wordWrap, caps } from '@termuijs/core';
 import { timerPoolSubscribe } from '@termuijs/motion';
 import { Widget } from '../base/Widget.js';
 
@@ -69,13 +69,15 @@ export class StreamingText extends Widget {
         return this._revealed >= this._text.length;
     }
 
-    /** Lifecycle: start the blink timer. */
+    /** Lifecycle: start the blink timer (only when motion is enabled). */
     mount(): void {
         super.mount();
-        this._blinkUnsub = timerPoolSubscribe(this._blinkInterval, () => {
-            this._cursorVisible = !this._cursorVisible;
-            this.markDirty();
-        });
+        if (caps.motion) {
+            this._blinkUnsub = timerPoolSubscribe(this._blinkInterval, () => {
+                this._cursorVisible = !this._cursorVisible;
+                this.markDirty();
+            });
+        }
     }
 
     /** Lifecycle: stop the blink timer. */

@@ -2,7 +2,7 @@
 // @termuijs/widgets — Gauge widget (label + bar + value)
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, type Color, styleToCellAttrs, stringWidth } from '@termuijs/core';
+import { type Screen, type Style, type Color, styleToCellAttrs, stringWidth, caps } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 
 export interface GaugeOptions {
@@ -66,7 +66,7 @@ export class Gauge extends Widget {
         const filled = Math.round(barWidth * this._value);
         const barX = x + labelWidth;
         for (let i = 0; i < barWidth; i++) {
-            const char = i < filled ? '█' : '░';
+            const char = i < filled ? (caps.unicode ? '█' : '#') : (caps.unicode ? '░' : '-');
             screen.setCell(barX + i, y, {
                 char,
                 fg: i < filled ? this._color : { type: 'named', name: 'brightBlack' },

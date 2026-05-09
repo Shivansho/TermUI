@@ -190,7 +190,7 @@ export class VirtualList extends Widget {
             }
 
             // Add selection prefix
-            const prefix = isSelected ? '▸ ' : '  ';
+            const prefix = isSelected ? (caps.unicode ? '▸ ' : '> ') : '  ';
             let line = prefix + content;
             line = truncate(line, contentWidth);
 

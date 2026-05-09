@@ -1,12 +1,14 @@
 // Toast — auto-dismiss notification
 import { Widget } from '@termuijs/widgets';
-import { type Screen, mergeStyles, defaultStyle, styleToCellAttrs } from '@termuijs/core';
+import { type Screen, mergeStyles, defaultStyle, styleToCellAttrs, caps } from '@termuijs/core';
 
 export type ToastType = 'info' | 'success' | 'warning' | 'error';
 export interface ToastMessage { text: string; type: ToastType; expireAt: number; }
 export interface ToastOptions { position?: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left'; durationMs?: number; maxVisible?: number; }
 
-const ICONS: Record<ToastType, string> = { info: 'ℹ', success: '✓', warning: '⚠', error: '✗' };
+const ICONS_UNICODE: Record<ToastType, string> = { info: 'ℹ', success: '✓', warning: '⚠', error: '✗' };
+const ICONS_ASCII: Record<ToastType, string> = { info: 'i', success: '+', warning: '!', error: 'x' };
+const ICONS: Record<ToastType, string> = caps.unicode ? ICONS_UNICODE : ICONS_ASCII;
 const COLORS: Record<ToastType, string> = { info: 'cyan', success: 'green', warning: 'yellow', error: 'red' };
 
 export class Toast extends Widget {

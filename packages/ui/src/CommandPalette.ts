@@ -1,6 +1,6 @@
 // CommandPalette — fuzzy-search command launcher
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars } from '@termuijs/core';
+import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars, caps } from '@termuijs/core';
 
 export interface Command { id: string; label: string; shortcut?: string; action: () => void; category?: string; }
 export interface CommandPaletteOptions { placeholder?: string; borderColor?: Style['fg']; activeColor?: Style['fg']; maxVisible?: number; }
@@ -51,7 +51,8 @@ export class CommandPalette extends Widget {
         const { x, y, width, height } = this._rect;
         const attrs = styleToCellAttrs(this.style);
         // Backdrop
-        for (let r = 0; r < height; r++) screen.writeString(x, y + r, '░'.repeat(width), { ...attrs, dim: true });
+        const backdropCh = caps.unicode ? '░' : ' ';
+        for (let r = 0; r < height; r++) screen.writeString(x, y + r, backdropCh.repeat(width), { ...attrs, dim: true });
         // Box
         const vis = this._filtered.slice(0, this._maxVisible);
         const bw = Math.min(60, width - 4);
@@ -66,14 +67,14 @@ export class CommandPalette extends Widget {
         // Input row
         screen.writeString(bx, by + 1, border.left, ba);
         const input = this._query || this._placeholder;
-        screen.writeString(bx + 1, by + 1, (' 🔍 ' + input).slice(0, bw - 2).padEnd(bw - 2), { ...attrs, dim: !this._query });
+        screen.writeString(bx + 1, by + 1, (` ${caps.unicode ? '🔍' : '[?]'} ` + input).slice(0, bw - 2).padEnd(bw - 2), { ...attrs, dim: !this._query });
         screen.writeString(bx + bw - 1, by + 1, border.right, ba);
         // Separator
         screen.writeString(bx, by + 2, border.left + '─'.repeat(bw - 2) + border.right, ba);
         // Items
         for (let i = 0; i < vis.length && i + 3 < bh - 1; i++) {
             const c = vis[i]; const active = i === this._selectedIndex;
-            const label = (active ? '❯ ' : '  ') + c.label;
+            const label = (active ? (caps.unicode ? '❯ ' : '> ') : '  ') + c.label;
             const sc = c.shortcut ?? '';
             screen.writeString(bx, by + 3 + i, border.left, ba);
             screen.writeString(bx + 1, by + 3 + i, (' ' + label).slice(0, bw - sc.length - 3).padEnd(bw - sc.length - 3), { ...attrs, fg: active ? this._activeColor : attrs.fg, bold: active });

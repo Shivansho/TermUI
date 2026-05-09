@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────
 
 import { type Screen, type Style, styleToCellAttrs, type Color, caps, BRAILLE_SPIN } from '@termuijs/core';
+import { timerPoolSubscribe } from '@termuijs/motion';
 import { Widget } from '../base/Widget.js';
 
 /**
@@ -69,6 +70,7 @@ export class Spinner extends Widget {
     private _color: Color;
     private _lastTick = 0;
     private _elapsed = 0;
+    private _timerUnsub?: () => void;
 
     constructor(style: Partial<Style> = {}, options: SpinnerOptions = {}) {
         super({ height: 1, ...style });
@@ -103,6 +105,23 @@ export class Spinner extends Widget {
             this._frameIndex = (this._frameIndex + 1) % this._frames.length;
             this._elapsed = 0;
         }
+    }
+
+    /** Lifecycle: start the frame-advance timer (only when motion is enabled). */
+    mount(): void {
+        super.mount();
+        if (!caps.motion) return;
+        this._timerUnsub = timerPoolSubscribe(this._interval, () => {
+            this._frameIndex = (this._frameIndex + 1) % this._frames.length;
+            this.markDirty();
+        });
+    }
+
+    /** Lifecycle: stop the frame-advance timer. */
+    unmount(): void {
+        this._timerUnsub?.();
+        this._timerUnsub = undefined;
+        super.unmount();
     }
 
     protected _renderSelf(screen: Screen): void {

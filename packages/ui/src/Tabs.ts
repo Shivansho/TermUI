@@ -1,6 +1,6 @@
 // Tabs — tabbed container with keyboard switching
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs } from '@termuijs/core';
+import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, caps } from '@termuijs/core';
 
 export interface Tab { label: string; content: Widget; }
 export interface TabsOptions {
@@ -37,14 +37,14 @@ export class Tabs extends Widget {
         for (let i = 0; i < this._tabs.length; i++) {
             const tab = this._tabs[i];
             const isActive = i === this._activeIndex;
-            const label = isActive ? ` ● ${tab.label} ` : `   ${tab.label} `;
+            const label = isActive ? ` ${caps.unicode ? '●' : '*'} ${tab.label} ` : `   ${tab.label} `;
             screen.writeString(col, y, label, {
                 ...attrs,
                 fg: isActive ? this._activeColor : this._inactiveColor,
                 bold: isActive, dim: !isActive,
             });
             col += label.length;
-            if (i < this._tabs.length - 1) { screen.writeString(col, y, '│', { ...attrs, dim: true }); col++; }
+            if (i < this._tabs.length - 1) { screen.writeString(col, y, caps.unicode ? '│' : '|', { ...attrs, dim: true }); col++; }
         }
         if (height > 1) screen.writeString(x, y + 1, '─'.repeat(width), { ...attrs, dim: true });
     }

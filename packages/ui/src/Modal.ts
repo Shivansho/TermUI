@@ -1,6 +1,6 @@
 // Modal — overlay dialog with backdrop
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars } from '@termuijs/core';
+import { type Style, type Screen, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars, caps } from '@termuijs/core';
 
 export interface ModalOptions {
     title?: string;
@@ -25,7 +25,7 @@ export class Modal extends Widget {
         this._modalWidth = options.width ?? 50;
         this._modalHeight = options.height ?? 15;
         this._borderColor = options.borderColor ?? { type: 'named', name: 'cyan' };
-        this._backdropChar = options.backdropChar ?? '░';
+        this._backdropChar = options.backdropChar ?? (caps.unicode ? '░' : ' ');
     }
 
     get visible(): boolean { return this._visible; }
