@@ -230,9 +230,18 @@ export class App {
 
     /**
      * Request a re-render on the next frame.
+     * Skips layout + render pass when the root widget reports no dirty state.
      */
     requestRender(): void {
         if (!this._mounted) return;
+
+        // Skip full layout pass if widget tree reports nothing has changed.
+        // isDirty propagates upward via markDirty(), so the root being clean
+        // means no descendant needs re-rendering either.
+        if (this._rootWidget.isDirty === false) {
+            this.renderer.requestFrame();
+            return;
+        }
 
         // Compute layout
         const layoutRoot = this._rootWidget.getLayoutNode();
@@ -247,6 +256,10 @@ export class App {
         // Clear the back buffer and render widgets into it
         this.screen.clear();
         this._rootWidget.render(this.screen);
+
+        // Clear dirty flags now that we've rendered — future requestRender()
+        // calls will skip layout until markDirty() is called again.
+        this._rootWidget.clearDirty?.();
 
         // Composite overlay layers on top of the base rendering
         this.layers.composite(this.screen);

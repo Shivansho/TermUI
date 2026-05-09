@@ -215,7 +215,10 @@ export class Terminal {
             this.restore();
             process.exit(1);
         };
-        process.once('uncaughtException', this._uncaughtExceptionHandler);
-        process.once('unhandledRejection', this._unhandledRejectionHandler);
+        // Use .on() (not .once()) so restore() can explicitly remove these handlers
+        // via process.off(). With .once(), the reference is removed after first fire,
+        // making process.off() in restore() a no-op on subsequent exceptions.
+        process.on('uncaughtException', this._uncaughtExceptionHandler);
+        process.on('unhandledRejection', this._unhandledRejectionHandler);
     }
 }
