@@ -6,8 +6,77 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { caps } from '@termuijs/core';
 
 afterEach(() => {
-    vi.unstubAllEnvs();
     vi.restoreAllMocks();
+});
+
+describe('Meter', () => {
+    it('initializes with 0 value', async () => {
+        const { Meter } = await import('./Meter.js');
+        const m = new Meter('Load');
+        expect(m.getValue()).toBe(0);
+    });
+
+    it('setValue sets and clamps the value and calls markDirty', async () => {
+        const { Meter } = await import('./Meter.js');
+        const m = new Meter('Load');
+        const spy = vi.spyOn(m as any, 'markDirty');
+        m.setValue(0.75);
+        expect(m.getValue()).toBe(0.75);
+        m.setValue(1.5);
+        expect(m.getValue()).toBe(1);
+        m.setValue(-0.5);
+        expect(m.getValue()).toBe(0);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('setLabel updates the label', async () => {
+        const { Meter } = await import('./Meter.js');
+        const m = new Meter('Load');
+        m.setLabel('Memory');
+        expect(m).toBeDefined();
+    });
+
+    it('uses ASCII chars when unicode is unavailable (spy)', async () => {
+        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(false);
+        const { Screen } = await import('@termuijs/core');
+        const { Meter } = await import('./Meter.js');
+
+        const meter = new Meter('Load');
+        meter.setValue(0.5);
+        meter.updateRect({ x: 0, y: 0, width: 20, height: 1 });
+        const screen = new Screen(20, 1);
+        meter.render(screen);
+
+        const rendered = screen.back[0].map((cell: { char: string }) => cell.char).join('');
+        expect(rendered).toContain('#');
+        expect(rendered).toContain('-');
+        expect(rendered).not.toMatch(/[█░]/);
+    });
+
+    it('uses unicode chars when unicode is available (spy)', async () => {
+        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
+        const { Screen } = await import('@termuijs/core');
+        const { Meter } = await import('./Meter.js');
+
+        const meter = new Meter('Load');
+        meter.setValue(0.5);
+        meter.updateRect({ x: 0, y: 0, width: 20, height: 1 });
+        const screen = new Screen(20, 1);
+        meter.render(screen);
+
+        const rendered = screen.back[0].map((cell: { char: string }) => cell.char).join('');
+        expect(rendered).toMatch(/[█░]/);
+        expect(rendered).not.toContain('#');
+    });
+});
+// ─────────────────────────────────────────────────────
+// @termuijs/widgets — Tests for Meter widget
+// ─────────────────────────────────────────────────────
+
+import { describe, it, expect, vi, afterEach } from 'vitest';
+
+afterEach(() => {
+    vi.unstubAllEnvs();
 });
 
 describe('Meter', () => {
@@ -124,8 +193,10 @@ describe('Meter', () => {
         expect(row).not.toContain('%');
     });
 
-    it('uses ASCII chars when unicode is unavailable', async () => {
-        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(false);
+    it('uses ASCII chars when NO_UNICODE=1', async () => {
+        vi.stubEnv('NO_UNICODE', '1');
+        vi.stubEnv('TERM', '');
+        vi.resetModules();
         const { Screen } = await import('@termuijs/core');
         const { Meter } = await import('./Meter.js');
 
@@ -142,7 +213,9 @@ describe('Meter', () => {
     });
 
     it('uses unicode chars when unicode is available', async () => {
-        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
+        vi.stubEnv('NO_UNICODE', '');
+        vi.stubEnv('TERM', '');
+        vi.resetModules();
         const { Screen } = await import('@termuijs/core');
         const { Meter } = await import('./Meter.js');
 
