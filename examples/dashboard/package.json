@@ -1,5 +1,8 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3226f40 (Revert "final check")
     "name": "@termuijs/example-dashboard",
     "version": "0.1.0",
     "private": true,
@@ -17,6 +20,7 @@
     },
     "engines": {
         "bun": ">=1.3.0"
+<<<<<<< HEAD
     },
     "devDependencies": {
         "rimraf": "^6.1.3"
@@ -41,4 +45,7 @@
                     "bun":  "\u003e=1.3.0"
                 }
 >>>>>>> 90a5b1b (final check)
+=======
+    }
+>>>>>>> 3226f40 (Revert "final check")
 }
