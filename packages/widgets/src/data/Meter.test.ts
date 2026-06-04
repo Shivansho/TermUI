@@ -3,9 +3,11 @@
 // ─────────────────────────────────────────────────────
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
+import { caps } from '@termuijs/core';
 
 afterEach(() => {
     vi.unstubAllEnvs();
+    vi.restoreAllMocks();
 });
 
 describe('Meter', () => {
@@ -122,10 +124,8 @@ describe('Meter', () => {
         expect(row).not.toContain('%');
     });
 
-    it('uses ASCII chars when NO_UNICODE=1', async () => {
-        vi.stubEnv('NO_UNICODE', '1');
-        vi.stubEnv('TERM', '');
-        vi.resetModules();
+    it('uses ASCII chars when unicode is unavailable', async () => {
+        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(false);
         const { Screen } = await import('@termuijs/core');
         const { Meter } = await import('./Meter.js');
 
@@ -142,9 +142,7 @@ describe('Meter', () => {
     });
 
     it('uses unicode chars when unicode is available', async () => {
-        vi.stubEnv('NO_UNICODE', '');
-        vi.stubEnv('TERM', '');
-        vi.resetModules();
+        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
         const { Screen } = await import('@termuijs/core');
         const { Meter } = await import('./Meter.js');
 
