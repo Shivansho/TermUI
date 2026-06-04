@@ -3,7 +3,6 @@
 // ─────────────────────────────────────────────────────
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { caps } from '@termuijs/core';
 
 afterEach(() => {
     vi.restoreAllMocks();
