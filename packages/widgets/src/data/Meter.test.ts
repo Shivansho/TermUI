@@ -62,9 +62,8 @@ describe('Meter', () => {
         expect(filledCells.length).toBeGreaterThan(0);
         const barCell = filledCells[0];
         expect(barCell.fg).toBeDefined();
-        if (barCell.fg && typeof barCell.fg === 'object' && 'name' in barCell.fg) {
-            expect(barCell.fg.name).toBe('red');
-        }
+        expect(typeof barCell.fg).toBe('object');
+        expect((barCell.fg as { name: string }).name).toBe('red');
     });
 
     it('renders high color when value is at or above high threshold', async () => {
@@ -79,9 +78,8 @@ describe('Meter', () => {
         expect(filledCells.length).toBeGreaterThan(0);
         const barCell = filledCells[0];
         expect(barCell.fg).toBeDefined();
-        if (barCell.fg && typeof barCell.fg === 'object' && 'name' in barCell.fg) {
-            expect(barCell.fg.name).toBe('yellow');
-        }
+        expect(typeof barCell.fg).toBe('object');
+        expect((barCell.fg as { name: string }).name).toBe('yellow');
     });
 
     it('renders optimum color when value is between low and high', async () => {
@@ -96,9 +94,8 @@ describe('Meter', () => {
         expect(filledCells.length).toBeGreaterThan(0);
         const barCell = filledCells[0];
         expect(barCell.fg).toBeDefined();
-        if (barCell.fg && typeof barCell.fg === 'object' && 'name' in barCell.fg) {
-            expect(barCell.fg.name).toBe('green');
-        }
+        expect(typeof barCell.fg).toBe('object');
+        expect((barCell.fg as { name: string }).name).toBe('green');
     });
 
     it('hides percentage when showLabel is false', async () => {
