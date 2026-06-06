@@ -99,12 +99,12 @@ describe('UnorderedList', () => {
         const { list, screen } = renderList([{ text: 'Old item' }]);
         expect(rowText(screen, 0)).toContain('Old item');
 
-    list.clearDirty();
-    list.setItems([{ text: 'New item' }]);
-    expect(list.isDirty).toBe(true);
+        list.clearDirty();
+        list.setItems([{ text: 'New item' }]);
+        expect(list.isDirty).toBe(true);
 
-    const nextScreen = new Screen(40, 10);
-    list.render(nextScreen);
-    expect(rowText(nextScreen, 0)).toContain('New item');
+        const nextScreen = new Screen(40, 10);
+        list.render(nextScreen);
+        expect(rowText(nextScreen, 0)).toContain('New item');
     });
 });
