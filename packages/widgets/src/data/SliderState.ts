@@ -51,8 +51,17 @@ export function useSliderState(options: SliderStateOptions = {}): SliderState {
         disabled = false,
     } = options;
 
-    const initial = clamp(snap(defaultValue ?? min, min, step), min, max);
+    if (!Number.isFinite(min) || !Number.isFinite(max) || !Number.isFinite(step)) {
+        throw new RangeError('min, max, and step must be finite numbers');
+    }
+    if (step <= 0) {
+        throw new RangeError('step must be > 0');
+    }
+    if (max < min) {
+        throw new RangeError('max must be >= min');
+    }
 
+    const initial = clamp(snap(defaultValue ?? min, min, step), min, max);
     const state: SliderState = {
         value: initial,
         min,
