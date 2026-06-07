@@ -1,54 +1,118 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Screen, caps, createKeyEvent } from "@termuijs/core";
-import { RangeInput } from "./RangeInput.js";
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import type { KeyEvent } from '@termuijs/core';
 
-describe("RangeInput", () => {
-    beforeEach(() => {
-        vi.spyOn(caps, "unicode", "get").mockReturnValue(false);
+function makeKey(key: string): KeyEvent {
+    return {
+        key,
+        shift: false,
+        ctrl: false,
+        alt: false,
+        raw: Buffer.alloc(0),
+        stopPropagation: () => {},
+        preventDefault: () => {},
+    };
+}
+
+afterEach(() => { vi.unstubAllEnvs(); });
+
+describe('RangeInput', () => {
+    it('constructs with low=min, high=max', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        expect(r.getLow()).toBe(0);
+        expect(r.getHigh()).toBe(100);
     });
 
-    afterEach(() => {
-        vi.restoreAllMocks();
+    it('setLow and setHigh work', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.setLow(20);
+        r.setHigh(80);
+        expect(r.getLow()).toBe(20);
+        expect(r.getHigh()).toBe(80);
     });
 
-    it("renders with initial values", () => {
+    it('setLow clamps to min and cannot exceed high', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.setHigh(50);
+        r.setLow(90);  // exceeds high → clamps to high
+        expect(r.getLow()).toBe(50);
+        r.setLow(-10); // below min → clamps to min
+        expect(r.getLow()).toBe(0);
+    });
+
+    it('setHigh clamps to max and cannot go below low', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.setLow(50);
+        r.setHigh(10);  // below low → clamps to low
+        expect(r.getHigh()).toBe(50);
+        r.setHigh(200); // above max → clamps to max
+        expect(r.getHigh()).toBe(100);
+    });
+
+    it('setRange sets both values', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.setRange(20, 80);
+        expect(r.getLow()).toBe(20);
+        expect(r.getHigh()).toBe(80);
+    });
+
+    it('tab toggles active handle', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.setRange(20, 80);
+        r.handleKey(makeKey('tab'));
+        r.handleKey(makeKey('right'));
+        expect(r.getHigh()).toBe(81); // high handle moved
+        expect(r.getLow()).toBe(20);  // low unchanged
+    });
+
+    it('arrow keys move low handle by step', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const r = new RangeInput('Price');
+        r.handleKey(makeKey('right'));
+        expect(r.getLow()).toBe(1);
+        r.handleKey(makeKey('left'));
+        expect(r.getLow()).toBe(0);
+    });
+
+    it('renders unicode track chars', async () => {
+        vi.stubEnv('NO_UNICODE', '');
+        vi.stubEnv('TERM', '');
+        vi.resetModules();
+        const { Screen } = await import('@termuijs/core');
+        const { RangeInput } = await import('./RangeInput.js');
+
+        const r = new RangeInput('Price');
+        r.setRange(20, 80);
+        r.updateRect({ x: 0, y: 0, width: 40, height: 1 });
         const screen = new Screen(40, 1);
-        const input = new RangeInput("Volume", {}, { min: 0, max: 10, value: [2, 8] });
-        input.updateRect({ x: 0, y: 0, width: 40, height: 1 });
-        input.render(screen);
+        r.render(screen);
 
-        const row = screen.getLine(0);
-        expect(row).toContain("Volume < ");
-        expect(row).toContain(" [2-8]");
+        const row = screen.back[0].map((cell: { char: string }) => cell.char).join('');
+        expect(row).toMatch(/[█░]/);
+        expect(row).not.toContain('#');
     });
 
-    it("clamps values correctly", () => {
-        const input = new RangeInput("Vol", {}, { min: 0, max: 100 });
-        input.setValues([-10, 150]);
-        expect(input.getValue()).toEqual([0, 100]);
+    it('renders ASCII track chars when NO_UNICODE=1', async () => {
+        vi.stubEnv('NO_UNICODE', '1');
+        vi.stubEnv('TERM', '');
+        vi.resetModules();
+        const { Screen } = await import('@termuijs/core');
+        const { RangeInput } = await import('./RangeInput.js');
 
-        input.setValue(0, 50);
-        expect(input.getValue()).toEqual([50, 100]);
+        const r = new RangeInput('Price');
+        r.setRange(20, 80);
+        r.updateRect({ x: 0, y: 0, width: 40, height: 1 });
+        const screen = new Screen(40, 1);
+        r.render(screen);
 
-        // moving max below min clamps it to min
-        input.setValue(1, 20);
-        expect(input.getValue()).toEqual([50, 50]);
-    });
-
-    it("handles keyboard events to increment and decrement", () => {
-        const input = new RangeInput("Vol", {}, { min: 0, max: 100, step: 5, value: [20, 80] });
-        
-        // Active thumb is 0 (min) by default
-        input.handleKey(createKeyEvent({ key: "right", raw: Buffer.from(""), ctrl: false, alt: false, shift: false }));
-        expect(input.getValue()).toEqual([25, 80]);
-
-        input.handleKey(createKeyEvent({ key: "left", raw: Buffer.from(""), ctrl: false, alt: false, shift: false }));
-        expect(input.getValue()).toEqual([20, 80]);
-
-        // Switch to thumb 1 (max)
-        input.handleKey(createKeyEvent({ key: "tab", raw: Buffer.from(""), ctrl: false, alt: false, shift: false }));
-
-        input.handleKey(createKeyEvent({ key: "left", raw: Buffer.from(""), ctrl: false, alt: false, shift: false }));
-        expect(input.getValue()).toEqual([20, 75]);
+        const row = screen.back[0].map((cell: { char: string }) => cell.char).join('');
+        expect(row).toContain('#');
+        expect(row).toContain('-');
+        expect(row).not.toMatch(/[█░]/);
     });
 });
