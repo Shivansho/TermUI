@@ -117,6 +117,9 @@ export type { FilePickerOptions, FileEntry } from './FilePicker.js';
 export { DatePicker } from './DatePicker.js';
 export type { DatePickerOptions } from './DatePicker.js';
 
+export { TimePicker } from './TimePicker.js';
+export type { TimePickerOptions } from './TimePicker.js';
+
 export { DateRangePicker } from './DateRangePicker.js';
 export type { DateRange, DateRangePickerOptions } from './DateRangePicker.js';
 
@@ -140,6 +143,8 @@ export type { SegmentedControlOptions } from './SegmentedControl.js';
 export { SearchableSelect } from './SearchableSelect.js';
 export { Toggle } from './Toggle.js';
 export type { ToggleOptions } from './Toggle.js';
+export { Switch } from './Switch.js';
+export type { SwitchOptions } from './Switch.js';
 export { Checkbox } from './Checkbox.js';
 export type { CheckboxOptions } from './Checkbox.js';
 
@@ -159,6 +164,9 @@ export type { MultilineTextInputOptions } from './MultilineTextInput.js';
 export {BasicAuthPrompt} from './BasicAuthPrompt.js';
 export type {BasicAuthCredentials,BasicAuthPromptOptions} from './BasicAuthPrompt.js'
 
+export { TextArea } from './TextArea.js';
+export type { TextAreaOptions } from './TextArea.js';
+
 
 export { Stepper } from './Stepper.js';
 export type { StepperOptions } from './Stepper.js';
@@ -167,6 +175,9 @@ export type { Shortcut, ShortcutHelpOverlayProps } from './components/ShortcutHe
 
 export { RadioGroup } from './RadioGroup.js';
 export type { RadioGroupOption, RadioGroupOptions } from './RadioGroup.js';
+
+export { Rating } from './Rating.js';
+export type { RatingOptions } from './Rating.js';
 export { ThemeSwitcher } from './ThemeSwitcher.js';
 export type { ThemeSwitcherOptions } from './ThemeSwitcher.js';
 
@@ -177,3 +188,16 @@ export type { EmailInputOptions } from './EmailInput.js';
 
 export { QuizPrompt } from './QuizPrompt.js';
 export type { QuizPromptOptions, QuizQuestion, QuizResult } from './QuizPrompt.js';
+
+export { EditablePrompt } from './EditablePrompt.js';
+export type {
+    EditablePromptChoice,
+    EditablePromptResult,
+    EditablePromptOptions,
+} from './EditablePrompt.js';
+
+export { SurveyPrompt } from './SurveyPrompt.js';
+export type { SurveyPromptOptions, SurveyQuestion } from './SurveyPrompt.js';
+
+export { Breadcrumb } from './Breadcrumb.js';
+export type { BreadcrumbItem, BreadcrumbOptions } from './Breadcrumb.js';
