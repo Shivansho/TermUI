@@ -39,7 +39,9 @@ export { VirtualList } from './input/VirtualList.js';
 export type { VirtualListOptions } from './input/VirtualList.js';
 export { CommandPalette } from './input/CommandPalette.js';
 export type { Command, CommandPaletteOptions } from './input/CommandPalette.js';
-
+export { Slider, buildHorizontalTrack, buildVerticalTrackRows, useSliderState } from './input/Slider.js';
+export type { SliderOptions, SliderOrientation } from './input/Slider.js';
+export type { SliderState, SliderStateOptions } from './data/SliderState.js';
 // ── Data Widgets ──────────────────────────────────────
 export { Table } from './data/Table.js';
 export type { TableColumn, TableRow, TableOptions, TableProps } from './data/Table.js';
