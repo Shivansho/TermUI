@@ -173,3 +173,4 @@ export type { MarqueeDirection, MarqueeOptions } from './display/Marquee.js';exp
 export { DataGrid as DataGridView } from './data/DataGrid.js';
 export type { DataGridColumn, DataGridRow, DataGridOptions, SortDirection } from './data/DataGrid.js';
 
+export { _resetWidgetIdCounter } from './base/Widget.js';
